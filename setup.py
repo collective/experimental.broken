@@ -3,12 +3,12 @@ import os
 
 tests_require = ['zope.testing']
 
-setup(name='experimental.brokeninterfaces',
+setup(name='experimental.broken',
       version='0.1',
-      description="Better ZODB handling of broken interfaces",
+      description="Better ZODB handling of broken interfaces and components",
       long_description=
       open(os.path.join(
-          "experimental", "brokeninterfaces", "README.txt")).read() + '\n\n' +
+          "experimental", "broken", "README.txt")).read() + '\n\n' +
       open(os.path.join("docs", "HISTORY.txt")).read(),
       # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
@@ -30,7 +30,7 @@ setup(name='experimental.brokeninterfaces',
           'ZODB3',
           'zope.interface',
       ],
-      test_suite = "experimental.brokeninterfaces.tests.test_suite",
+      test_suite = "experimental.broken.tests.test_suite",
       tests_require=tests_require,
       extras_require=dict(test=tests_require),
       entry_points="""
