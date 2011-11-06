@@ -45,8 +45,7 @@ provide that interface will fail.
     Traceback (most recent call last):
     TypeError: ("'type' object is not iterable", <function Provides at 0x...>, (<class 'experimental.brokeninterfaces.tests.Foo'>, <class 'experimental.brokeninterfaces.tests.IFoo'>))
 
-When the patches are applied, the object behaves properly and the
-interface can be removed.
+When the patches are applied, the object behaves properly.
 
     >>> from zope.interface import declarations
     >>> from experimental import brokeninterfaces
@@ -60,3 +59,17 @@ interface can be removed.
     'bar'
     >>> list(interface.directlyProvidedBy(foo_three))
     [<InterfaceClass experimental.brokeninterfaces.IBroken>]
+
+The interface can be removed.
+
+    >>> interface.noLongerProvides(foo_three, brokeninterfaces.IBroken)
+    >>> transaction.commit()
+
+    >>> conn_four = db.open()
+    >>> root_four = conn_four.root()
+    >>> foo_four = root_four['foo']
+
+    >>> foo_four.bar
+    'bar'
+    >>> list(interface.directlyProvidedBy(foo_four))
+    []
