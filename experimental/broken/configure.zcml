@@ -1,0 +1,28 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    xmlns:five="http://namespaces.zope.org/five"
+    i18n_domain="plone.app.discussion">
+
+    <include package="collective.monkeypatcher" />
+
+    <monkey:patch
+        description="Gracefully handle missing marker interfaces in
+                     the ZODB"
+        class="zope.interface.declarations.ProvidesClass"
+        original="__init__"
+        replacement=".interface.__init__"
+        />
+
+    <monkey:patch
+        description="Gracefully handle component registries with
+                     broken components in the ZODB"
+        class="zope.component.persistentregistry.PersistentAdapterRegistry"
+        original="__setstate__"
+        replacement=".registry.__setstate__"
+        />
+
+</configure>

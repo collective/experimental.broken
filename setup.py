@@ -4,7 +4,7 @@ import os
 tests_require = ['zope.testing']
 
 setup(name='experimental.broken',
-      version='0.1',
+      version='0.2',
       description="Better ZODB handling of broken interfaces and components",
       long_description=(open("README.rst").read() + '\n\n' + 
                         open(os.path.join("docs", "HISTORY.rst")).read()),
@@ -31,8 +31,11 @@ setup(name='experimental.broken',
       test_suite = "experimental.broken.tests.test_suite",
       tests_require=tests_require,
       extras_require=dict(test=tests_require,
-                          registry=['zope.component']),
+                          registry=['zope.component'],
+                          zcml=['collective.monkeypatcher']),
       entry_points="""
       # -*- Entry points: -*-
+      [z3c.autoinclude.plugin]
+      target = plone
       """,
       )

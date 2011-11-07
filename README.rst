@@ -40,3 +40,8 @@ zope.interface and zope.component themselves.  IOW, when this code is
 found to be robust enough to use more widely, this package won't be
 the home for it.  So once again, unless you are a senior Zope
 developer, do not use these patches.
+
+If you want to try this package out, work only on a copy of your ZODB,
+never on the live data, and simply add this package to your instance's
+eggs.  It uses z3c.autoinclude to automatically apply the patches
+under a Plone instance.
