@@ -34,6 +34,14 @@ or components, the commit will succeed and it is still possible to
 fully restore previous behavior if the missing classes and interfaces
 are restored.
 
+The one exception is when the class of a *non-persistent* component
+registered in a persistent registry is removed, the registry cannot be
+successfully committed back to the ZODB.  IOW, if your persistent
+registry contains a registration for a component whose base classes do
+*not* include persistent.Persistent, then you'll be able to *use* the
+registry but you won't be able to make any changes to the registry
+without first removing the broken component registration.
+
 The intention of this package is to see if the implementation of
 broken object handling is correct and robust enough to merge into
 zope.interface and zope.component themselves.  IOW, when this code is
