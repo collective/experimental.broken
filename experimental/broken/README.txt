@@ -11,11 +11,9 @@ interface.
     >>> from ZODB.DB import DB
     >>> storage = DemoStorage()
     >>> db = DB(storage)
-    >>> conn_one = db.open()
-    >>> root_one = conn_one.root()
 
     >>> from experimental.broken import tests
-    >>> root_one['foo'] = foo_one = tests.Foo()
+    >>> db.open().root()['foo'] = foo_one = tests.Foo()
     >>> foo_one.bar = 'bar'
 
     >>> import zope.interface
@@ -41,10 +39,7 @@ provide that interface will fail.
 
     >>> del tests.IFoo
 
-    >>> conn_two = db.open()
-    >>> root_two = conn_two.root()
-    >>> foo_two = root_two['foo']
-
+    >>> foo_two = db.open().root()['foo']
     >>> foo_two.bar
     Traceback (most recent call last):
     TypeError: ("'type' object is not iterable", <function Provides at 0x...>, (<class 'experimental.broken.tests.Foo'>, <class 'experimental.broken.tests.IFoo'>))
@@ -64,10 +59,7 @@ When the patches are applied, the object behaves properly.
     >>> from experimental.broken import interface
     >>> declarations._normalizeargs = interface._normalizeargs
 
-    >>> conn_three = db.open()
-    >>> root_three = conn_three.root()
-    >>> foo_three = root_three['foo']
-
+    >>> foo_three = db.open().root()['foo']
     >>> foo_three.bar
     'bar'
     >>> list(zope.interface.directlyProvidedBy(foo_three))
@@ -82,10 +74,7 @@ The interface can be removed.
     >>> zope.interface.noLongerProvides(foo_three, interfaces.IBroken)
     >>> transaction.commit()
 
-    >>> conn_four = db.open()
-    >>> root_four = conn_four.root()
-    >>> foo_four = root_four['foo']
-
+    >>> foo_four = db.open().root()['foo']
     >>> foo_four.bar
     'bar'
     >>> list(zope.interface.directlyProvidedBy(foo_four))
