@@ -1,22 +1,39 @@
 """Broken Interfaces Handling"""
 
-from ZODB import interfaces
+from ZODB.interfaces import IBroken
 from ZODB.broken import Broken
+from ZODB.broken import broken_cache
+from ZODB.broken import find_global
 
-from zope.interface import interface
+from zope.interface.interface import InterfaceClass
 from zope.interface import declarations
 
-orig_normalizeargs = declarations._normalizeargs
+orig_Provides = declarations.Provides
 
 
-def _normalizeargs(sequence, *args, **kw):
-    """Handle broken objects assuming they should be interfaces."""
-    cls = sequence.__class__
-    if (cls is type and
-        len(sequence.__bases__) == 1 and
-        sequence.__bases__[0] is Broken):
-        iface = interface.InterfaceClass(
-            sequence.__name__, (interfaces.IBroken, ),
-            __module__=sequence.__module__)
-        return orig_normalizeargs(iface, *args, **kw)
-    return orig_normalizeargs(sequence, *args, **kw)
+class BrokenInterfaceClass(InterfaceClass):
+    """An interface whose module is no longer available."""
+
+    def __reduce__(self):
+        """Use ZODB.broken's missing tolerant global handling."""
+        return (find_global,
+                (self.__module__, self.__name__,
+                  IBroken, BrokenInterfaceClass))
+
+
+def Provides(*interfaces):
+    return orig_Provides(*rebuildBrokenInterfaces(*interfaces))
+
+
+def rebuildBrokenInterfaces(*interfaces):
+    for iface in interfaces:
+        cls = iface.__class__
+        if (cls is type and
+            len(iface.__bases__) == 1 and
+            iface.__bases__[0] is Broken):
+            broken_cache.pop((iface.__module__, iface.__name__,))
+            yield find_global(
+                iface.__module__, iface.__name__,
+                Broken=IBroken, type=BrokenInterfaceClass)
+        else:
+            yield iface

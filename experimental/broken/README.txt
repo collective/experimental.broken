@@ -57,17 +57,24 @@ When the patches are applied, the object behaves properly.
 
     >>> from zope.interface import declarations
     >>> from experimental.broken import interface
-    >>> declarations._normalizeargs = interface._normalizeargs
+    >>> declarations.Provides = interface.Provides
+    >>> declarations.InstanceDeclarations.clear()
 
     >>> foo_three = db.open().root()['foo']
     >>> foo_three.bar
     'bar'
     >>> list(zope.interface.directlyProvidedBy(foo_three))
-    [<InterfaceClass experimental.broken.tests.IFoo>]
+    [<BrokenInterfaceClass experimental.broken.tests.IFoo>]
     >>> IFoo.providedBy(foo_three)
     True
     >>> interfaces.IBroken.providedBy(foo_three)
     True
+
+The object can be committed back to the database when the code is
+missing and the patches are applied.
+
+    >>> foo_three._p_changed = True
+    >>> transaction.commit()
 
 The interface can be removed.
 
