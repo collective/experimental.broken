@@ -1,0 +1,64 @@
+.. -*-doctest-*-
+
+==============
+Broken Objects
+==============
+
+    >>> from experimental.broken import tests
+    >>> foo = tests.Bar()
+
+Try pickling round trip with python pickle.
+
+    >>> import pickle
+    >>> foo_pickled = pickle.dumps(foo)
+
+    >>> del tests.Bar
+    >>> tests.reset()
+
+    >>> from StringIO import StringIO
+    >>> from ZODB import broken
+    >>> file_ = StringIO(foo_pickled)
+    >>> unpickler = pickle.Unpickler(file_)
+    >>> unpickler.find_class = broken.find_global
+    >>> foo_unpickled = unpickler.load()
+    >>> foo_unpickled.__Broken_newargs__
+    ()
+
+    >>> tests.tearDown()
+
+Try pickling round trip with C pickle.
+
+    >>> import cPickle
+    >>> foo_pickled = cPickle.dumps(foo)
+
+    >>> del tests.Bar
+    >>> tests.reset()
+
+    >>> file_ = StringIO(foo_pickled)
+    >>> unpickler = cPickle.Unpickler(file_)
+    >>> unpickler.find_global = broken.find_global
+    >>> foo_unpickled = unpickler.load()
+    >>> foo_unpickled.__Broken_newargs__
+    ()
+
+    >>> tests.tearDown()
+
+Try pickling round trip with ZODB.
+
+    >>> from ZODB.DemoStorage import DemoStorage
+    >>> from ZODB.DB import DB
+    >>> storage = DemoStorage()
+    >>> db = DB(storage)
+
+    >>> import transaction
+    >>> db.open().root()['foo'] = foo
+    >>> transaction.commit()
+
+    >>> del tests.Bar
+    >>> tests.reset()
+
+    >>> foo_unpickled = db.open().root()['foo']
+    >>> foo_unpickled.__Broken_newargs__
+    ()
+
+    >>> tests.tearDown()

@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.4 - Unreleased
+----------------
+
+- Fix ZODB.broken.Broken pickling so that non-persistent component
+  registrations don't interfere with committing changes to a
+  persistent registry.
+  [rossp]
+
 0.3 - 2011-11-07
 ----------------
 

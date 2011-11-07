@@ -7,6 +7,7 @@ from zope.interface import declarations
 from zope.component import persistentregistry
 import persistent
 from ZODB import broken
+import transaction
 
 
 class IFoo(interface.Interface): pass
@@ -38,6 +39,7 @@ def tearDown(self=None,
              persistentregistry.PersistentAdapterRegistry.__setstate__,
              orig_IFoo=IFoo, orig_IQux=IQux, orig_Foo=Foo, orig_Bar=Bar):
     reset()
+    transaction.abort()
     InterfaceClass.__reduce__ = orig_reduce
     declarations.ProvidesClass.__setstate__ = orig_registry
     if '__setstate__' in persistentregistry.PersistentComponents.__dict__:
@@ -56,6 +58,7 @@ def test_suite():
     return doctest.DocFileSuite(
         'interface.txt',
         'registry.txt',
+        'broken.txt',
         tearDown=tearDown,
         optionflags=(
             doctest.ELLIPSIS|
