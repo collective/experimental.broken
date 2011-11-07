@@ -54,7 +54,7 @@ provide that interface will fail.
     >>> IFoo.providedBy(foo_two)
     Traceback (most recent call last):
     TypeError: ("'type' object is not iterable", <function Provides at 0x...>, (<class 'experimental.broken.tests.Foo'>, <class 'experimental.broken.tests.IFoo'>))
-    >>> interface.IBroken.providedBy(foo_two)
+    >>> interfaces.IBroken.providedBy(foo_two)
     Traceback (most recent call last):
     TypeError: ("'type' object is not iterable", <function Provides at 0x...>, (<class 'experimental.broken.tests.Foo'>, <class 'experimental.broken.tests.IFoo'>))
 
