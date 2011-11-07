@@ -18,12 +18,12 @@ class IBar(interface.Interface): pass
 class IQux(interface.Interface): pass
 
 
-class Bar(persistent.Persistent):
+class Bar(object):
 
     def __call__(self, *args, **kw): pass
 
 
-class Foo(Bar): pass
+class Foo(Bar, persistent.Persistent): pass
 
 
 def reset():
