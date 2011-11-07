@@ -8,7 +8,7 @@ from ZODB.broken import find_global
 from zope.interface.interface import InterfaceClass
 from zope.interface import declarations
 
-orig_ProvidesClass = declarations.ProvidesClass
+orig_init = declarations.ProvidesClass.__init__
 
 
 class BrokenInterfaceClass(InterfaceClass):
@@ -19,11 +19,9 @@ class BrokenInterfaceClass(InterfaceClass):
         return (find_global, (self.__module__, self.__name__))
 
 
-class ProvidesClass(orig_ProvidesClass):
-    
-    def __init__(self, cls, *interfaces):
-        return super(ProvidesClass, self).__init__(
-            cls, *rebuildBrokenInterfaces(*interfaces))
+def __init__(self, cls, *interfaces):
+    return orig_init(
+        self, cls, *rebuildBrokenInterfaces(*interfaces))
 
 
 def rebuildBrokenInterfaces(*interfaces):

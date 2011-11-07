@@ -58,7 +58,7 @@ When the patches are applied, the object behaves properly.
 
     >>> from experimental.broken import interface
     >>> from zope.interface import declarations
-    >>> declarations.ProvidesClass = interface.ProvidesClass
+    >>> declarations.ProvidesClass.__init__ = interface.__init__
     >>> tests.reset()
 
     >>> foo_three = db.open().root()['foo']
@@ -81,9 +81,7 @@ If the code is restored after the object has previously been committed
 to the ZODB without the code, the object behaves as it did before the
 code was removed in the first place.
 
-    >>> declarations.ProvidesClass = interface.orig_ProvidesClass
-    >>> tests.IFoo = IFoo
-    >>> tests.reset()
+    >>> tests.tearDown()
     >>> foo_four = db.open().root()['foo']
 
     >>> foo_four.bar
@@ -98,7 +96,7 @@ code was removed in the first place.
 The interface can be removed even when the code is not available.
 
     >>> del tests.IFoo
-    >>> declarations.ProvidesClass = interface.ProvidesClass
+    >>> declarations.ProvidesClass.__init__ = interface.__init__
     >>> tests.reset()
 
     >>> foo_five = db.open().root()['foo']
