@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.2 - Unreleased
+0.3 - 2011-11-07
 ----------------
 
 - Pickle broken interfaces in such a way that they can be unpickled
