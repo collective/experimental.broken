@@ -20,7 +20,7 @@ def reset():
 
 def test_suite():
     return doctest.DocFileSuite(
-        'README.txt',
+        'interface.txt',
         optionflags=(
             doctest.ELLIPSIS|
             doctest.NORMALIZE_WHITESPACE|
