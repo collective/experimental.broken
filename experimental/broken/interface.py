@@ -21,18 +21,17 @@ class BrokenInterfaceClass(InterfaceClass):
 
 def __init__(self, cls, *interfaces):
     return orig_init(
-        self, cls, *rebuildBrokenInterfaces(*interfaces))
+        self, cls,
+        *(rebuildBrokenInterface(iface) for iface in interfaces))
 
 
-def rebuildBrokenInterfaces(*interfaces):
-    for iface in interfaces:
-        cls = iface.__class__
-        if (cls is type and
-            len(iface.__bases__) == 1 and
-            iface.__bases__[0] is Broken):
-            broken_cache.pop((iface.__module__, iface.__name__,))
-            yield find_global(
-                iface.__module__, iface.__name__,
-                Broken=IBroken, type=BrokenInterfaceClass)
-        else:
-            yield iface
+def rebuildBrokenInterface(iface):
+    cls = iface.__class__
+    if (cls is type and
+        len(iface.__bases__) == 1 and
+        iface.__bases__[0] is Broken):
+        broken_cache.pop((iface.__module__, iface.__name__,))
+        return find_global(
+            iface.__module__, iface.__name__,
+            Broken=IBroken, type=BrokenInterfaceClass)
+    return iface

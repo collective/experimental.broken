@@ -17,12 +17,12 @@ class IBar(interface.Interface): pass
 class IQux(interface.Interface): pass
 
 
-class Bar(object):
+class Bar(persistent.Persistent):
 
     def __call__(self, *args, **kw): pass
 
 
-class Foo(Bar, persistent.Persistent): pass
+class Foo(Bar): pass
 
 
 def reset():
@@ -31,11 +31,13 @@ def reset():
 
 
 def tearDown(self=None, orig_ProvidesClass=declarations.ProvidesClass,
-             orig_setstate=
+             orig_registry=
              persistentregistry.PersistentAdapterRegistry.__setstate__,
              orig_IFoo=IFoo, orig_IQux=IQux, orig_Foo=Foo, orig_Bar=Bar):
     reset()
-    declarations.ProvidesClass = orig_ProvidesClass
+    declarations.ProvidesClass.__setstate__ = orig_registry
+    if '__setstate__' in persistentregistry.PersistentComponents.__dict__:
+        del persistentregistry.PersistentComponents.__setstate__
     global IFoo
     IFoo = orig_IFoo
     global IQux

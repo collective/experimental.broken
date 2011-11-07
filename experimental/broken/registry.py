@@ -1,28 +1,100 @@
 """Broken Interfaces Handling"""
 
 from ZODB.interfaces import IBroken
-from ZODB.broken import Broken
-from ZODB.broken import broken_cache
-from ZODB.broken import find_global
 
 from zope.component import persistentregistry
 
 from experimental.broken import interface
 
-orig_setstate = persistentregistry.PersistentAdapterRegistry.__setstate__
+orig_registry = persistentregistry.PersistentAdapterRegistry.__setstate__
+PersistentComponents = persistentregistry.PersistentComponents
+
+def rebuildBrokenRegisrations(iface, broken_iface, components):
+    for reg_iface, comps in components.iteritems():
+        if reg_iface is None or isinstance(reg_iface, unicode):
+            # We've reached the registration name or handler level
+            return
+        if reg_iface is iface:
+            components[broken_iface] = components.pop(reg_iface)
+        rebuildBrokenRegisrations(iface, broken_iface, comps)
 
 
-def __setstate__(self, state):
+def registry_setstate(self, state):
     provided = state['_provided']
     for iface, order in provided.iteritems():
-        cls = iface.__class__
-        if (cls is type and
-            len(iface.__bases__) == 1 and
-            iface.__bases__[0] is Broken):
-            broken_cache.pop((iface.__module__, iface.__name__,))
-            broken_iface = find_global(
-                iface.__module__, iface.__name__,
-                Broken=IBroken, type=interface.BrokenInterfaceClass)
-            del provided[iface]
-            provided[broken_iface] = order
-    return orig_setstate(self, state)
+        broken_iface = interface.rebuildBrokenInterface(iface)
+        if broken_iface.extends(IBroken):
+            provided[broken_iface] = provided.pop(iface)
+
+            for registry in ('_adapters', '_subscribers'):
+                byorder = state[registry]
+                for components in byorder:
+                    rebuildBrokenRegisrations(iface, broken_iface, components)
+                    
+
+    return orig_registry(self, state)
+
+def components_setstate(self, state):
+    registrations = state['_adapter_registrations']
+    for key, value in registrations.items():
+        required, provided, name = key
+        broken = False
+
+        required = list(required)
+        for idx, iface in enumerate(required):
+            iface = interface.rebuildBrokenInterface(iface)
+            if iface.extends(IBroken):
+                required[idx] = iface
+                broken = True
+        required = tuple(required)
+
+        provided = interface.rebuildBrokenInterface(provided)
+        if provided.extends(IBroken):
+            broken = True
+
+        if broken:
+            registrations[(required, provided, name)] = registrations.pop(key)
+
+    registrations = state['_utility_registrations']
+    for key, value in registrations.items():
+        provided, name = key
+        provided = interface.rebuildBrokenInterface(provided)
+        if provided.extends(IBroken):
+            registrations[(provided, name)] = registrations.pop(key)
+
+    registrations = state['_subscription_registrations']
+    for index, (required, provided, name, factory, info
+                ) in enumerate(registrations):
+        broken = False
+
+        required = list(required)
+        for idx, iface in enumerate(required):
+            iface = interface.rebuildBrokenInterface(iface)
+            if iface.extends(IBroken):
+                required[idx] = iface
+                broken = True
+        required = tuple(required)
+
+        provided = interface.rebuildBrokenInterface(provided)
+        if provided.extends(IBroken):
+            broken = True
+
+        if broken:
+            registrations[index] = (required, provided, name, factory, info)
+
+    registrations = state['_handler_registrations']
+    for index, (required, name, factory, info) in enumerate(registrations):
+        broken = False
+
+        required = list(required)
+        for idx, iface in enumerate(required):
+            iface = interface.rebuildBrokenInterface(iface)
+            if iface.extends(IBroken):
+                required[idx] = iface
+                broken = True
+        required = tuple(required)
+
+        if broken:
+            registrations[index] = (required, name, factory, info)
+
+    self.__dict__.update(**state)

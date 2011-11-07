@@ -4,6 +4,10 @@ Changelog
 0.2 - Unreleased
 ----------------
 
+- Fix component registrations such that they can be used to unregister
+  broken registrations.
+  [rossp]
+
 
 0.2 - 2011-11-06
 ----------------
