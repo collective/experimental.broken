@@ -8,7 +8,7 @@ from ZODB.broken import find_global
 from zope.interface.interface import InterfaceClass
 from zope.interface import declarations
 
-orig_Provides = declarations.Provides
+orig_ProvidesClass = declarations.ProvidesClass
 
 
 class BrokenInterfaceClass(InterfaceClass):
@@ -16,13 +16,14 @@ class BrokenInterfaceClass(InterfaceClass):
 
     def __reduce__(self):
         """Use ZODB.broken's missing tolerant global handling."""
-        return (find_global,
-                (self.__module__, self.__name__,
-                  IBroken, BrokenInterfaceClass))
+        return (find_global, (self.__module__, self.__name__))
 
 
-def Provides(*interfaces):
-    return orig_Provides(*rebuildBrokenInterfaces(*interfaces))
+class ProvidesClass(orig_ProvidesClass):
+    
+    def __init__(self, cls, *interfaces):
+        return super(ProvidesClass, self).__init__(
+            cls, *rebuildBrokenInterfaces(*interfaces))
 
 
 def rebuildBrokenInterfaces(*interfaces):

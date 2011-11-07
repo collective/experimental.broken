@@ -38,6 +38,7 @@ zope.interface operations on objects in the ZODB which directly
 provide that interface will fail.
 
     >>> del tests.IFoo
+    >>> tests.reset()
 
     >>> foo_two = db.open().root()['foo']
     >>> foo_two.bar
@@ -55,10 +56,10 @@ provide that interface will fail.
 
 When the patches are applied, the object behaves properly.
 
-    >>> from zope.interface import declarations
     >>> from experimental.broken import interface
-    >>> declarations.Provides = interface.Provides
-    >>> declarations.InstanceDeclarations.clear()
+    >>> from zope.interface import declarations
+    >>> declarations.ProvidesClass = interface.ProvidesClass
+    >>> tests.reset()
 
     >>> foo_three = db.open().root()['foo']
     >>> foo_three.bar
@@ -76,17 +77,40 @@ missing and the patches are applied.
     >>> foo_three._p_changed = True
     >>> transaction.commit()
 
-The interface can be removed.
+If the code is restored after the object has previously been committed
+to the ZODB without the code, the object behaves as it did before the
+code was removed in the first place.
 
-    >>> zope.interface.noLongerProvides(foo_three, interfaces.IBroken)
-    >>> transaction.commit()
-
+    >>> declarations.ProvidesClass = interface.orig_ProvidesClass
+    >>> tests.IFoo = IFoo
+    >>> tests.reset()
     >>> foo_four = db.open().root()['foo']
+
     >>> foo_four.bar
     'bar'
     >>> list(zope.interface.directlyProvidedBy(foo_four))
-    []
+    [<InterfaceClass experimental.broken.tests.IFoo>]
     >>> IFoo.providedBy(foo_four)
-    False
+    True
     >>> interfaces.IBroken.providedBy(foo_four)
+    False
+
+The interface can be removed even when the code is not available.
+
+    >>> del tests.IFoo
+    >>> declarations.ProvidesClass = interface.ProvidesClass
+    >>> tests.reset()
+
+    >>> foo_five = db.open().root()['foo']
+    >>> zope.interface.noLongerProvides(foo_five, interfaces.IBroken)
+    >>> transaction.commit()
+
+    >>> foo_six = db.open().root()['foo']
+    >>> foo_six.bar
+    'bar'
+    >>> list(zope.interface.directlyProvidedBy(foo_six))
+    []
+    >>> IFoo.providedBy(foo_six)
+    False
+    >>> interfaces.IBroken.providedBy(foo_six)
     False
