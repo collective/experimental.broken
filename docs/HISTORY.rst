@@ -1,8 +1,11 @@
 Changelog
 =========
 
-0.5 - Unreleased
+0.5 - 2011-11-07
 ----------------
+
+- Update ZCML to include newer patches.
+  [rossp]
 
 0.4 - 2011-11-07
 ----------------

@@ -22,7 +22,7 @@
                      the ZODB"
         class="zope.interface.declarations.ProvidesClass"
         original="__init__"
-        replacement=".interface.__init__"
+        replacement=".interface.provides_init"
         />
 
     <monkey:patch
@@ -30,7 +30,16 @@
                      broken components in the ZODB"
         class="zope.component.persistentregistry.PersistentAdapterRegistry"
         original="__setstate__"
-        replacement=".registry.__setstate__"
+        replacement=".registry.registry_setstate"
+        />
+
+    <monkey:patch
+        description="Gracefully handle component registries with
+                     broken components in the ZODB"
+        class="zope.component.persistentregistry.PersistentComponents"
+        original="__setstate__"
+        ignoreOriginal="True"
+        replacement=".registry.components_setstate"
         />
 
 </configure>

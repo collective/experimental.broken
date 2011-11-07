@@ -8,8 +8,8 @@ from ZODB.broken import find_global
 from zope.interface.interface import InterfaceClass
 from zope.interface import declarations
 
-orig_init = declarations.ProvidesClass.__init__
 orig_reduce = InterfaceClass.__reduce__
+orig_init = declarations.ProvidesClass.__init__
 
 
 def interface_reduce(self):
@@ -31,7 +31,7 @@ def interface_reduce(self):
         self.__module__, self.__name__, IBroken, InterfaceClass))
 
 
-def __init__(self, cls, *interfaces):
+def provides_init(self, cls, *interfaces):
     return orig_init(
         self, cls,
         *(rebuildBrokenInterface(iface) for iface in interfaces))

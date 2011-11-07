@@ -60,7 +60,7 @@ When the patches are applied, the object behaves properly.
     >>> from zope.interface import declarations
     >>> from experimental.broken import interface
     >>> InterfaceClass.__reduce__ = interface.interface_reduce
-    >>> declarations.ProvidesClass.__init__ = interface.__init__
+    >>> declarations.ProvidesClass.__init__ = interface.provides_init
     >>> tests.reset()
 
     >>> foo_three = db.open().root()['foo']
@@ -99,7 +99,7 @@ The interface can be removed even when the code is not available.
 
     >>> del tests.IFoo
     >>> InterfaceClass.__reduce__ = interface.interface_reduce
-    >>> declarations.ProvidesClass.__init__ = interface.__init__
+    >>> declarations.ProvidesClass.__init__ = interface.provides_init
     >>> tests.reset()
 
     >>> foo_five = db.open().root()['foo']
