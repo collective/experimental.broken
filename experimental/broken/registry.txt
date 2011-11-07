@@ -49,6 +49,11 @@ registrations has been removed.
     >>> del tests.Bar
     >>> tests.reset()
 
+    >>> from experimental.broken import registry
+    >>> from zope.component import persistentregistry
+    >>> persistentregistry.PersistentAdapterRegistry.__setstate__ = (
+    ...     registry.__setstate__)
+
     >>> registry_two = db.open().root()['registry']
     >>> sorted(registry_two.registeredUtilities())
     [UtilityRegistration(<PersistentComponents >, IFoo, u'',

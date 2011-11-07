@@ -3,6 +3,7 @@ from zope.testing import doctest
 
 from zope import interface
 from zope.interface import declarations
+from zope.component import persistentregistry
 import persistent
 from ZODB import broken
 
@@ -30,6 +31,8 @@ def reset():
 
 
 def tearDown(self=None, orig_ProvidesClass=declarations.ProvidesClass,
+             orig_setstate=
+             persistentregistry.PersistentAdapterRegistry.__setstate__,
              orig_IFoo=IFoo, orig_IQux=IQux, orig_Foo=Foo, orig_Bar=Bar):
     reset()
     declarations.ProvidesClass = orig_ProvidesClass
