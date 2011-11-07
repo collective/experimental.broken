@@ -32,7 +32,8 @@ setup(name='experimental.broken',
       ],
       test_suite = "experimental.broken.tests.test_suite",
       tests_require=tests_require,
-      extras_require=dict(test=tests_require),
+      extras_require=dict(test=tests_require,
+                          registry=['zope.component']),
       entry_points="""
       # -*- Entry points: -*-
       """,
