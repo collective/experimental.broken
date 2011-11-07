@@ -2,6 +2,7 @@ import unittest
 from zope.testing import doctest
 
 from zope import interface
+from zope.interface.interface import InterfaceClass
 from zope.interface import declarations
 from zope.component import persistentregistry
 import persistent
@@ -30,11 +31,14 @@ def reset():
     broken.broken_cache.clear()
 
 
-def tearDown(self=None, orig_ProvidesClass=declarations.ProvidesClass,
+def tearDown(self=None,
+             orig_reduce=InterfaceClass.__reduce__,
+             orig_ProvidesClass=declarations.ProvidesClass,
              orig_registry=
              persistentregistry.PersistentAdapterRegistry.__setstate__,
              orig_IFoo=IFoo, orig_IQux=IQux, orig_Foo=Foo, orig_Bar=Bar):
     reset()
+    InterfaceClass.__reduce__ = orig_reduce
     declarations.ProvidesClass.__setstate__ = orig_registry
     if '__setstate__' in persistentregistry.PersistentComponents.__dict__:
         del persistentregistry.PersistentComponents.__setstate__

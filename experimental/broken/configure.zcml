@@ -10,6 +10,14 @@
     <include package="collective.monkeypatcher" />
 
     <monkey:patch
+        description="Add missing interface handling to interface
+                     pickles."
+        class="zope.interface.interface.InterfaceClass"
+        original="__reduce__"
+        replacement=".interface.interface_reduce"
+        />
+
+    <monkey:patch
         description="Gracefully handle missing marker interfaces in
                      the ZODB"
         class="zope.interface.declarations.ProvidesClass"

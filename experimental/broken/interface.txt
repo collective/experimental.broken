@@ -56,8 +56,10 @@ provide that interface will fail.
 
 When the patches are applied, the object behaves properly.
 
-    >>> from experimental.broken import interface
+    >>> from zope.interface.interface import InterfaceClass
     >>> from zope.interface import declarations
+    >>> from experimental.broken import interface
+    >>> InterfaceClass.__reduce__ = interface.interface_reduce
     >>> declarations.ProvidesClass.__init__ = interface.__init__
     >>> tests.reset()
 
@@ -65,7 +67,7 @@ When the patches are applied, the object behaves properly.
     >>> foo_three.bar
     'bar'
     >>> list(zope.interface.directlyProvidedBy(foo_three))
-    [<BrokenInterfaceClass experimental.broken.tests.IFoo>]
+    [<InterfaceClass experimental.broken.tests.IFoo>]
     >>> IFoo.providedBy(foo_three)
     True
     >>> interfaces.IBroken.providedBy(foo_three)
@@ -96,6 +98,7 @@ code was removed in the first place.
 The interface can be removed even when the code is not available.
 
     >>> del tests.IFoo
+    >>> InterfaceClass.__reduce__ = interface.interface_reduce
     >>> declarations.ProvidesClass.__init__ = interface.__init__
     >>> tests.reset()
 

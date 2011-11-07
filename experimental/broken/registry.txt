@@ -49,8 +49,11 @@ registrations has been removed.
     >>> del tests.Bar
     >>> tests.reset()
 
-    >>> from experimental.broken import registry
+    >>> from zope.interface.interface import InterfaceClass
     >>> from zope.component import persistentregistry
+    >>> from experimental.broken import registry
+    >>> from experimental.broken import interface
+    >>> InterfaceClass.__reduce__ = interface.interface_reduce
     >>> persistentregistry.PersistentAdapterRegistry.__setstate__ = (
     ...     registry.registry_setstate)
     >>> persistentregistry.PersistentComponents.__setstate__ = (

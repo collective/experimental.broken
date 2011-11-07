@@ -4,6 +4,10 @@ Changelog
 0.2 - Unreleased
 ----------------
 
+- Pickle broken interfaces in such a way that they can be unpickled
+  without this package being installed.
+  [rossp]
+
 - Fix component registrations such that they can be used to unregister
   broken registrations.
   [rossp]
