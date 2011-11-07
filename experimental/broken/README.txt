@@ -22,14 +22,14 @@ interface.
     >>> IFoo = tests.IFoo
     >>> zope.interface.alsoProvides(foo_one, IFoo)
 
-    >>> from experimental.broken import interface
+    >>> from ZODB import interfaces
     >>> foo_one.bar
     'bar'
     >>> list(zope.interface.directlyProvidedBy(foo_one))
     [<InterfaceClass experimental.broken.tests.IFoo>]
     >>> IFoo.providedBy(foo_one)
     True
-    >>> interface.IBroken.providedBy(foo_one)
+    >>> interfaces.IBroken.providedBy(foo_one)
     False
 
     >>> import transaction
@@ -61,6 +61,7 @@ provide that interface will fail.
 When the patches are applied, the object behaves properly.
 
     >>> from zope.interface import declarations
+    >>> from experimental.broken import interface
     >>> declarations._normalizeargs = interface._normalizeargs
 
     >>> conn_three = db.open()
@@ -70,15 +71,15 @@ When the patches are applied, the object behaves properly.
     >>> foo_three.bar
     'bar'
     >>> list(zope.interface.directlyProvidedBy(foo_three))
-    [<InterfaceClass experimental.broken.interface.IBroken>]
+    [<InterfaceClass experimental.broken.tests.IFoo>]
     >>> IFoo.providedBy(foo_three)
-    False
-    >>> interface.IBroken.providedBy(foo_three)
+    True
+    >>> interfaces.IBroken.providedBy(foo_three)
     True
 
 The interface can be removed.
 
-    >>> zope.interface.noLongerProvides(foo_three, interface.IBroken)
+    >>> zope.interface.noLongerProvides(foo_three, interfaces.IBroken)
     >>> transaction.commit()
 
     >>> conn_four = db.open()
@@ -91,5 +92,5 @@ The interface can be removed.
     []
     >>> IFoo.providedBy(foo_four)
     False
-    >>> interface.IBroken.providedBy(foo_four)
+    >>> interfaces.IBroken.providedBy(foo_four)
     False
