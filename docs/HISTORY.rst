@@ -1,7 +1,10 @@
 Changelog
 =========
 
-0.4 - Unreleased
+0.5 - Unreleased
+----------------
+
+0.4 - 2011-11-07
 ----------------
 
 - Fix ZODB.broken.Broken pickling so that non-persistent component
