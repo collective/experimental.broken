@@ -1,0 +1,112 @@
+.. -*-doctest-*-
+
+==============================
+Broken Component Registrations
+==============================
+
+Start with a ZODB root with a persistent component registry in it.
+
+    >>> from ZODB.DemoStorage import DemoStorage
+    >>> from ZODB.DB import DB
+    >>> storage = DemoStorage()
+    >>> db = DB(storage)
+
+    >>> from zope.component import persistentregistry
+    >>> db.open().root()['registry'] = registry_one = (
+    ...     persistentregistry.PersistentComponents())
+
+Register a persistent component and non-persistent component to the
+registry.
+
+    >>> from experimental.broken import tests
+    >>> foo = tests.Foo()
+    >>> registry_one.registerUtility(component=foo, provided=tests.IFoo)
+    >>> registry_one.registerAdapter(
+    ...     factory=foo, required=(tests.IFoo,), provided=tests.IFoo)
+    >>> registry_one.registerSubscriptionAdapter(
+    ...     factory=foo, required=(tests.IFoo,), provided=tests.IFoo)
+    >>> registry_one.registerHandler(
+    ...     factory=foo, required=(tests.IFoo,))
+
+    >>> bar = tests.Bar()
+    >>> registry_one.registerUtility(component=bar, provided=tests.IQux)
+    >>> registry_one.registerAdapter(
+    ...     factory=bar, required=(tests.IQux,), provided=tests.IQux)
+    >>> registry_one.registerSubscriptionAdapter(
+    ...     factory=bar, required=(tests.IQux,), provided=tests.IQux)
+    >>> registry_one.registerHandler(
+    ...     factory=bar, required=(tests.IQux,))
+
+    >>> import transaction
+    >>> transaction.commit()
+
+The component registry is still functional when the code for some
+registrations has been removed.
+
+    >>> del tests.IFoo
+    >>> del tests.IQux
+    >>> del tests.Foo
+    >>> del tests.Bar
+    >>> tests.reset()
+
+    >>> registry_two = db.open().root()['registry']
+    >>> sorted(registry_two.registeredUtilities())
+    [UtilityRegistration(<PersistentComponents >, IFoo, u'',
+      broken object, None, u''),
+     UtilityRegistration(<PersistentComponents >, IQux, u'',
+      broken object, None, u'')]
+    >>> sorted(registry_two.registeredAdapters())
+    [AdapterRegistration(<PersistentComponents >, [IFoo], IFoo, u'',
+      broken object, u''),
+     AdapterRegistration(<PersistentComponents >, [IQux], IQux, u'',
+      broken object, u'')]
+    >>> sorted(registry_two.registeredSubscriptionAdapters())
+    [SubscriptionRegistration(<PersistentComponents >, [IFoo], IFoo, u'',
+      broken object, u''),
+     SubscriptionRegistration(<PersistentComponents >, [IQux], IQux, u'',
+      broken object, u'')]
+    >>> sorted(registry_two.registeredHandlers())
+    [HandlerRegistration(<PersistentComponents >, [IFoo], u'',
+      broken object, u''),
+     HandlerRegistration(<PersistentComponents >, [IQux], u'',
+      broken object, u'')]
+
+    >>> registry_two.queryUtility(tests.IBar)
+    >>> registry_two.queryAdapter(None, tests.IBar)
+    >>> registry_two.queryMultiAdapter([None], tests.IBar)
+    >>> registry_two.subscribers([None], tests.IBar)
+    []
+    >>> registry_two.handle([None])
+
+When the code has been restored the component registry behaves as normal.
+
+    >>> tests.tearDown()
+
+    >>> registry_three = db.open().root()['registry']
+    >>> sorted(registry_three.registeredUtilities())
+    [UtilityRegistration(<PersistentComponents >, IFoo, u'',
+      <experimental.broken.tests.Foo object at 0x...>, None, u''),
+     UtilityRegistration(<PersistentComponents >, IQux, u'',
+      <experimental.broken.tests.Bar object at 0x...>, None, u'')]
+    >>> sorted(registry_three.registeredAdapters())
+    [AdapterRegistration(<PersistentComponents >, [IFoo], IFoo, u'',
+      <experimental.broken.tests.Foo object at 0x...>, u''),
+     AdapterRegistration(<PersistentComponents >, [IQux], IQux, u'',
+      <experimental.broken.tests.Bar object at 0x...>, u'')]
+    >>> sorted(registry_three.registeredSubscriptionAdapters())
+    [SubscriptionRegistration(<PersistentComponents >, [IFoo], IFoo, u'',
+      <experimental.broken.tests.Foo object at 0x...>, u''),
+     SubscriptionRegistration(<PersistentComponents >, [IQux], IQux, u'',
+      <experimental.broken.tests.Bar object at 0x...>, u'')]
+    >>> sorted(registry_three.registeredHandlers())
+    [HandlerRegistration(<PersistentComponents >, [IFoo], u'',
+      <experimental.broken.tests.Foo object at 0x...>, u''),
+     HandlerRegistration(<PersistentComponents >, [IQux], u'',
+      <experimental.broken.tests.Bar object at 0x...>, u'')]
+
+    >>> registry_three.queryUtility(tests.IBar)
+    >>> registry_three.queryAdapter(None, tests.IBar)
+    >>> registry_three.queryMultiAdapter([None], tests.IBar)
+    >>> registry_three.subscribers([None], tests.IBar)
+    []
+    >>> registry_three.handle([None])
