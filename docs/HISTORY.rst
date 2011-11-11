@@ -4,6 +4,9 @@ Changelog
 0.6 - Unreleased
 ----------------
 
+- Tolerate empty ZODB.broken class cache.
+  [rossp]
+
 - Fix broken class check, tolerate ExtensionClass as is the case in a
   Zope2 application.
   [rossp]
