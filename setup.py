@@ -4,7 +4,7 @@ import os
 tests_require = ['zope.testing']
 
 setup(name='experimental.broken',
-      version='0.5',
+      version='0.6',
       description="Better ZODB handling of broken interfaces and components",
       long_description=(open("README.rst").read() + '\n\n' + 
                         open(os.path.join("docs", "HISTORY.rst")).read()),

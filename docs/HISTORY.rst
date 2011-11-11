@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.6 - Unreleased
+----------------
+
+- Fix broken class check, tolerate ExtensionClass as is the case in a
+  Zope2 application.
+  [rossp]
+
 0.5 - 2011-11-07
 ----------------
 

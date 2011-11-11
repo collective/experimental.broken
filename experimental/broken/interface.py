@@ -38,10 +38,7 @@ def provides_init(self, cls, *interfaces):
 
 
 def rebuildBrokenInterface(iface):
-    cls = iface.__class__
-    if (cls is type and
-        len(iface.__bases__) == 1 and
-        iface.__bases__[0] is Broken):
+    if isinstance(iface, type) and issubclass(iface, Broken):
         broken_cache.pop((iface.__module__, iface.__name__,))
         return find_global(
             iface.__module__, iface.__name__,
