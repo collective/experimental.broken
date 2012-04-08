@@ -34,14 +34,16 @@ def reset():
 
 def tearDown(self=None,
              orig_reduce=InterfaceClass.__reduce__,
-             orig_ProvidesClass=declarations.ProvidesClass,
-             orig_registry=
+             orig_provides_init=declarations.ProvidesClass.__init__,
+             orig_registry_setstate=
              persistentregistry.PersistentAdapterRegistry.__setstate__,
              orig_IFoo=IFoo, orig_IQux=IQux, orig_Foo=Foo, orig_Bar=Bar):
     reset()
     transaction.abort()
     InterfaceClass.__reduce__ = orig_reduce
-    declarations.ProvidesClass.__setstate__ = orig_registry
+    declarations.ProvidesClass.__init__ = orig_provides_init
+    persistentregistry.PersistentAdapterRegistry.__setstate__ = (
+        orig_registry_setstate)
     if '__setstate__' in persistentregistry.PersistentComponents.__dict__:
         del persistentregistry.PersistentComponents.__setstate__
     global IFoo
