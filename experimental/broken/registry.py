@@ -30,9 +30,9 @@ def registry_setstate(self, state):
                 byorder = state[registry]
                 for components in byorder:
                     rebuildBrokenRegisrations(iface, broken_iface, components)
-                    
 
     return orig_registry(self, state)
+
 
 def components_setstate(self, state):
     registrations = state['_adapter_registrations']
