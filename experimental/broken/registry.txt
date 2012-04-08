@@ -40,14 +40,55 @@ registry.
     >>> import transaction
     >>> transaction.commit()
 
-The component registry is still functional when the code for some
-registrations has been removed.
+When the code for some registrations has been removed, the registry is
+broken.
 
     >>> del tests.IFoo
     >>> del tests.IQux
     >>> del tests.Foo
     >>> del tests.Bar
     >>> tests.reset()
+
+    >>> registry_two = db.open().root()['registry']
+    >>> sorted(registry_two.registeredUtilities())
+    [UtilityRegistration(<PersistentComponents >, IFoo, u'',
+      broken object, None, u''),
+     UtilityRegistration(<PersistentComponents >, IQux, u'',
+      broken object, None, u'')]
+    >>> sorted(registry_two.registeredAdapters())
+    [AdapterRegistration(<PersistentComponents >, [IFoo], IFoo, u'',
+      broken object, u''),
+     AdapterRegistration(<PersistentComponents >, [IQux], IQux, u'',
+      broken object, u'')]
+    >>> sorted(registry_two.registeredSubscriptionAdapters())
+    [SubscriptionRegistration(<PersistentComponents >, [IFoo], IFoo, u'',
+      broken object, u''),
+     SubscriptionRegistration(<PersistentComponents >, [IQux], IQux, u'',
+      broken object, u'')]
+    >>> sorted(registry_two.registeredHandlers())
+    [HandlerRegistration(<PersistentComponents >, [IFoo], u'',
+      broken object, u''),
+     HandlerRegistration(<PersistentComponents >, [IQux], u'',
+      broken object, u'')]
+
+    >>> registry_two.queryUtility(tests.IBar)
+    Traceback (most recent call last):
+    AttributeError: type object 'I...' has no attribute '__iro__'
+    >>> registry_two.queryAdapter(None, tests.IBar)
+    Traceback (most recent call last):
+    AttributeError: type object 'I...' has no attribute '__iro__'
+    >>> registry_two.queryMultiAdapter([None], tests.IBar)
+    Traceback (most recent call last):
+    AttributeError: type object 'I...' has no attribute '__iro__'
+    >>> registry_two.subscribers([None], tests.IBar)
+    Traceback (most recent call last):
+    AttributeError: type object 'I...' has no attribute '__iro__'
+    >>> registry_two.handle([None])
+    Traceback (most recent call last):
+    AttributeError: type object 'I...' has no attribute '__iro__'
+
+When the patches are applied, the component registry is once again
+functional.
 
     >>> from zope.interface.interface import InterfaceClass
     >>> from zope.component import persistentregistry
