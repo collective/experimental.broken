@@ -4,6 +4,9 @@ Changelog
 0.6 - Unreleased
 ----------------
 
+- Plone: Cleanup portlet types from code which has been removed.
+  [rpatterson]
+
 - Tolerate empty ZODB.broken class cache.
   [rossp]
 
