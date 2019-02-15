@@ -43,10 +43,12 @@ provide that interface will fail.
     >>> foo_two = db.open().root()['foo']
     >>> foo_two.bar
     Traceback (most recent call last):
-    TypeError: ("'type' object is not iterable", <function Provides at 0x...>, (<class 'experimental.broken.tests.Foo'>, <class 'experimental.broken.tests.IFoo'>))
+    ...
+    TypeError: ...'type' object is not iterable...
     >>> list(zope.interface.directlyProvidedBy(foo_two))
     Traceback (most recent call last):
-    TypeError: ("'type' object is not iterable", <function Provides at 0x...>, (<class 'experimental.broken.tests.Foo'>, <class 'experimental.broken.tests.IFoo'>))
+    ...
+    TypeError: ...'type' object is not iterable...
     >>> IFoo.providedBy(foo_two)
     False
     >>> interfaces.IBroken.providedBy(foo_two)
@@ -64,9 +66,11 @@ When the patches are applied, the object behaves properly.
     >>> foo_three = db.open().root()['foo']
     >>> foo_three.bar
     'bar'
-    >>> list(zope.interface.directlyProvidedBy(foo_three))
+    >>> foo_three_provided = list(
+    ...     zope.interface.directlyProvidedBy(foo_three))
+    >>> foo_three_provided
     [<InterfaceClass experimental.broken.tests.IFoo>]
-    >>> IFoo.providedBy(foo_three)
+    >>> foo_three_provided[0].providedBy(foo_three)
     True
     >>> interfaces.IBroken.providedBy(foo_three)
     True

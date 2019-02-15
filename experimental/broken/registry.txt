@@ -133,12 +133,14 @@ Registrations can be removed when the classes and/or interfaces are
 missing.
 
     >>> foo_reg, bar_reg = sorted(registry_two.registeredAdapters())
-
     >>> registry_two.unregisterUtility(provided=foo_reg.provided)
     True
     >>> registry_two.unregisterAdapter(
     ...     required=foo_reg.required, provided=foo_reg.provided)
     True
+
+    >>> foo_reg, bar_reg = sorted(
+    ...     registry_two.registeredSubscriptionAdapters())
     >>> registry_two.unregisterSubscriptionAdapter(
     ...     required=foo_reg.required, provided=foo_reg.provided)
     True

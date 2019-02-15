@@ -1,5 +1,5 @@
 import unittest
-from zope.testing import doctest
+import doctest
 
 from zope import interface
 from zope.interface.interface import InterfaceClass
@@ -10,21 +10,39 @@ from ZODB import broken
 import transaction
 
 
-class IFoo(interface.Interface): pass
+class IFoo(interface.Interface):
+    """
+    Foo example interface.
+    """
 
 
-class IBar(interface.Interface): pass
+class IBar(interface.Interface):
+    """
+    Bar example interface.
+    """
 
 
-class IQux(interface.Interface): pass
+class IQux(interface.Interface):
+    """
+    Qux example interface.
+    """
 
 
 class Bar(object):
+    """
+    Bar example callable instance.
+    """
 
-    def __call__(self, *args, **kw): pass
+    def __call__(self, *args, **kw):
+        """
+        Bar example callable instance call method.
+        """
 
 
-class Foo(Bar, persistent.Persistent): pass
+class Foo(Bar, persistent.Persistent):
+    """
+    Foo example persistent instance.
+    """
 
 
 def reset():
@@ -32,12 +50,13 @@ def reset():
     broken.broken_cache.clear()
 
 
-def tearDown(self=None,
-             orig_reduce=InterfaceClass.__reduce__,
-             orig_provides_init=declarations.ProvidesClass.__init__,
-             orig_registry_setstate=
-             persistentregistry.PersistentAdapterRegistry.__setstate__,
-             orig_IFoo=IFoo, orig_IQux=IQux, orig_Foo=Foo, orig_Bar=Bar):
+def tearDown(
+        self=None,
+        orig_reduce=InterfaceClass.__reduce__,
+        orig_provides_init=declarations.ProvidesClass.__init__,
+        orig_registry_setstate=(
+            persistentregistry.PersistentAdapterRegistry.__setstate__),
+        orig_IFoo=IFoo, orig_IQux=IQux, orig_Foo=Foo, orig_Bar=Bar):
     reset()
     transaction.abort()
     InterfaceClass.__reduce__ = orig_reduce
@@ -63,8 +82,8 @@ def test_suite():
         'broken.txt',
         tearDown=tearDown,
         optionflags=(
-            doctest.ELLIPSIS|
-            doctest.NORMALIZE_WHITESPACE|
+            doctest.ELLIPSIS |
+            doctest.NORMALIZE_WHITESPACE |
             doctest.REPORT_NDIFF))
         
 if __name__ == '__main__':
