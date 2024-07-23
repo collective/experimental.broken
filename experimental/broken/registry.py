@@ -10,7 +10,7 @@ orig_registry = persistentregistry.PersistentAdapterRegistry.__setstate__
 PersistentComponents = persistentregistry.PersistentComponents
 
 def rebuildBrokenRegisrations(iface, broken_iface, components):
-    for reg_iface, comps in components.iteritems():
+    for reg_iface, comps in components.items():
         if reg_iface is None or isinstance(reg_iface, unicode):
             # We've reached the registration name or handler level
             return
@@ -21,7 +21,7 @@ def rebuildBrokenRegisrations(iface, broken_iface, components):
 
 def registry_setstate(self, state):
     provided = state['_provided']
-    for iface, order in provided.iteritems():
+    for iface, order in provided.items():
         broken_iface = interface.rebuildBrokenInterface(iface)
         if broken_iface.extends(IBroken):
             provided[broken_iface] = provided.pop(iface)
