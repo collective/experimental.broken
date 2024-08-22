@@ -1,17 +1,19 @@
 """Broken Interfaces Handling"""
 
+from experimental.broken import interface
 from ZODB.interfaces import IBroken
-
 from zope.component import persistentregistry
 
-from experimental.broken import interface
+import six
+
 
 orig_registry = persistentregistry.PersistentAdapterRegistry.__setstate__
 PersistentComponents = persistentregistry.PersistentComponents
 
+
 def rebuildBrokenRegisrations(iface, broken_iface, components):
     for reg_iface, comps in components.items():
-        if reg_iface is None or isinstance(reg_iface, unicode):
+        if reg_iface is None or isinstance(reg_iface, six.text_type):
             # We've reached the registration name or handler level
             return
         if reg_iface is iface:
@@ -20,13 +22,13 @@ def rebuildBrokenRegisrations(iface, broken_iface, components):
 
 
 def registry_setstate(self, state):
-    provided = state['_provided']
+    provided = state["_provided"]
     for iface, order in provided.items():
         broken_iface = interface.rebuildBrokenInterface(iface)
         if broken_iface.extends(IBroken):
             provided[broken_iface] = provided.pop(iface)
 
-            for registry in ('_adapters', '_subscribers'):
+            for registry in ("_adapters", "_subscribers"):
                 byorder = state[registry]
                 for components in byorder:
                     rebuildBrokenRegisrations(iface, broken_iface, components)
@@ -35,7 +37,7 @@ def registry_setstate(self, state):
 
 
 def components_setstate(self, state):
-    registrations = state['_adapter_registrations']
+    registrations = state["_adapter_registrations"]
     for key, value in registrations.items():
         required, provided, name = key
         broken = False
@@ -55,16 +57,15 @@ def components_setstate(self, state):
         if broken:
             registrations[(required, provided, name)] = registrations.pop(key)
 
-    registrations = state['_utility_registrations']
+    registrations = state["_utility_registrations"]
     for key, value in registrations.items():
         provided, name = key
         provided = interface.rebuildBrokenInterface(provided)
         if provided.extends(IBroken):
             registrations[(provided, name)] = registrations.pop(key)
 
-    registrations = state['_subscription_registrations']
-    for index, (required, provided, name, factory, info
-                ) in enumerate(registrations):
+    registrations = state["_subscription_registrations"]
+    for index, (required, provided, name, factory, info) in enumerate(registrations):
         broken = False
 
         required = list(required)
@@ -82,7 +83,7 @@ def components_setstate(self, state):
         if broken:
             registrations[index] = (required, provided, name, factory, info)
 
-    registrations = state['_handler_registrations']
+    registrations = state["_handler_registrations"]
     for index, (required, name, factory, info) in enumerate(registrations):
         broken = False
 
