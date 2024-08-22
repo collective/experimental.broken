@@ -3,3 +3,10 @@ bin/
 bootstrap.py
 develop-eggs/
 parts/
+.coverage
+.python-version
+*.egg-info/
+__pycache__/
+lib/
+lib64
+pyvenv.cfg
